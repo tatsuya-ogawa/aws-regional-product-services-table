@@ -54,7 +54,7 @@ const getServices = async () => {
             });
         }
         const regions = regionsElem.map(r => r.region);
-        return (services, regions);
+        return {services, regions};
     } catch (err) {
         console.log(err);
         throw err
