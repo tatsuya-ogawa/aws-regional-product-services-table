@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
-const fs = require("fs");
-(async () => {
+
+const getServices = async () => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
@@ -45,26 +45,21 @@ const fs = require("fs");
             dic[region] = data;
         }
         let services = {};
-        for(const region in dic){
-            dic[region].forEach((service)=>{
+        for (const region in dic) {
+            dic[region].forEach((service) => {
                 services[service.textContent] = {
                     href: service.href,
-                    regions: [...(services[service.textContent] || {regions:[]}).regions,region]
+                    regions: [...(services[service.textContent] || {regions: []}).regions, region]
                 }
             });
         }
-
-        //output.csv
-        const regions = regionsElem.map(r=>r.region);
-        const lines = [["","",...regions],...Object.entries(services).map((props)=>{
-            const [service,prop] = props;
-            return [service,prop.href,...regions.map(r=>prop.regions.includes(r) ? "1":"")]
-        })];
-        fs.writeFileSync("aws-services.csv", lines.map(line=>line.join(",")).join("\n"));
+        const regions = regionsElem.map(r => r.region);
+        return (services, regions);
     } catch (err) {
         console.log(err);
-        // エラーが起きた際の処理
+        throw err
     } finally {
         await browser.close();
     }
-})();
+}
+exports.getServices = getServices;
